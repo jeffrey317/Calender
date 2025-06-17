@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_calendar"
+        android:icon="@drawable/ic_calendar"
+        android:title="Calendar" />
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search"
+        android:title="Search" />
+
+    <item
+        android:id="@+id/action_ai_chat"
+        android:icon="@drawable/ic_chat"
+        android:title="AI Chat" />
+
+    <item
+        android:id="@+id/action_photo_gallery"
+        android:icon="@drawable/ic_gallery"
+        android:title="Gallery" />
+
+    <item
+        android:id="@+id/action_calorie"
+        android:icon="@drawable/ic_calorie"
+        android:title="Calories" />
+</menu> 

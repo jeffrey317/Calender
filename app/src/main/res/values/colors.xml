@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Theme colors -->
+    <color name="purple_50">#F3E5F5</color>
+    <color name="purple_100">#E1BEE7</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Event colors -->
+    <color name="event_red">#F44336</color>
+    <color name="event_green">#4CAF50</color>
+    <color name="event_blue">#2196F3</color>
+    <color name="event_orange">#FF9800</color>
+    <color name="event_purple">#9C27B0</color>
+    <color name="event_teal">#009688</color>
+    
+    <!-- Text colors -->
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    
+    <!-- Calendar colors -->
+    <color name="calendar_background">#FFFFFF</color>
+    <color name="calendar_day_text">#212121</color>
+    <color name="calendar_day_text_disabled">#CCCCCC</color>
+    <color name="calendar_day_header">#757575</color>
+    <color name="calendar_selected">#7C4DFF</color>
+    <color name="calendar_today">#FFEB3B</color>
+    <color name="calendar_normal_bg">#F3F3F3</color>
+    <color name="calendar_header_text">#212121</color>
+    <color name="calendar_header_icon">#757575</color>
+    
+    <!-- Notification colors -->
+    <color name="notification_background">#E8F5E9</color>
+    <color name="notification_text">#2E7D32</color>
+    <color name="notification_icon">#2E7D32</color>
+    
+    <!-- Navigation colors -->
+    <color name="bottom_nav_icon">#757575</color>
+    
+    <!-- Other colors -->
+    <color name="ic_launcher_background">#FFFFFF</color>
+</resources>

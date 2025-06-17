@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:stateListAnimator="@null">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:id="@+id/selectedIndicator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                android:background="@drawable/selected_circle_background" />
+
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textAppearance="?attr/textAppearanceBody2"
+                tools:text="15" />
+
+        </FrameLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</FrameLayout> 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Calendar dimensions -->
+    <dimen name="calendar_card_radius">16dp</dimen>
+    <dimen name="calendar_card_elevation">4dp</dimen>
+    <dimen name="calendar_day_size">40dp</dimen>
+    <dimen name="calendar_day_text_size">14sp</dimen>
+    <dimen name="calendar_header_text_size">12sp</dimen>
+    <dimen name="calendar_padding">16dp</dimen>
+    <dimen name="calendar_day_margin">4dp</dimen>
+    
+    <!-- Animation durations (in milliseconds) -->
+    <integer name="motion_duration_small">100</integer>
+    <integer name="motion_duration_medium">200</integer>
+    <integer name="motion_duration_large">300</integer>
+</resources> 

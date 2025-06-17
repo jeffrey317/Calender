@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material motion interpolators -->
+    <string name="motion_easing_emphasized">cubic-bezier(0.4, 0.0, 0.2, 1)</string>
+    <string name="motion_easing_standard">cubic-bezier(0.2, 0.0, 0.0, 1.0)</string>
+    <string name="motion_easing_accelerated">cubic-bezier(0.3, 0.0, 1.0, 1.0)</string>
+    <string name="motion_easing_decelerated">cubic-bezier(0.0, 0.0, 0.2, 1.0)</string>
+</resources> 

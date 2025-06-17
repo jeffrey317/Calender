@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:background="@android:color/white"
+    android:layout_marginHorizontal="16dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="24dp">
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Meal"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A1A"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/meal_type_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:singleSelection="true"
+            app:chipSpacingHorizontal="8dp"
+            app:layout_constraintTop_toBottomOf="@id/dialog_title">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/breakfast_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BREAKFAST"
+                style="@style/Widget.App.Chip"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/lunch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LUNCH"
+                style="@style/Widget.App.Chip"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dinner_button"
+                android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                android:text="DINNER"
+                style="@style/Widget.App.Chip"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/other_button"
+                android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+                android:text="SNACK"
+                style="@style/Widget.App.Chip"/>
+        </com.google.android.material.chip.ChipGroup>
+
+        <EditText
+            android:id="@+id/food_content_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/rounded_edit_text_background"
+            android:hint="Food Content"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:elevation="0dp"
+            app:layout_constraintTop_toBottomOf="@id/meal_type_container"/>
+
+        <LinearLayout
+            android:id="@+id/location_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@id/food_content_edit_text">
+
+            <EditText
+                android:id="@+id/location_edit_text"
+                android:layout_width="0dp"
+            android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_edit_text_background"
+                android:hint="Location"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:inputType="text"
+                android:maxLines="1"
+                android:elevation="0dp"
+                android:layout_marginEnd="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/get_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GET LOCATION"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                app:cornerRadius="8dp"
+                android:backgroundTint="#6200EE"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/photo_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Photo"
+            android:textSize="16sp"
+            android:textColor="#1A1A1A"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/location_container"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <ImageView
+            android:id="@+id/meal_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/rounded_image_background"
+            android:scaleType="centerCrop"
+            app:layout_constraintTop_toBottomOf="@id/photo_label"/>
+
+        <LinearLayout
+            android:id="@+id/photo_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/meal_image_view">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/take_photo_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TAKE PHOTO"
+                android:layout_marginEnd="8dp"
+                android:textSize="14sp"
+                app:cornerRadius="8dp"
+                android:backgroundTint="#6200EE"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/choose_photo_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="CHOOSE"
+                android:textSize="14sp"
+                app:cornerRadius="8dp"
+                android:backgroundTint="#6200EE"/>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/save_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:layout_marginTop="24dp"
+            android:textSize="16sp"
+            app:cornerRadius="8dp"
+            android:backgroundTint="#6200EE"
+            app:layout_constraintTop_toBottomOf="@id/photo_buttons"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView> 
