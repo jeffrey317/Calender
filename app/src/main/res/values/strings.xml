@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Calendar</string>
+    <string name="app_name">Health Calendar Application</string>
     <string name="calendar">Calendar</string>
     <string name="search">Search</string>
     <string name="ai_chat">AI Chat</string>
@@ -17,4 +17,18 @@
     <string name="save">Save</string>
     <string name="logout">Logout</string>
     <string name="default_web_client_id">your_web_client_id_here</string>
+    
+    <!-- Add/Edit Meal Dialog -->
+    <string name="meal_type">Meal Type</string>
+    <string name="meal_type_breakfast">BREAKFAST</string>
+    <string name="meal_type_lunch">LUNCH</string>
+    <string name="meal_type_dinner">DINNER</string>
+    <string name="meal_type_snack">SNACK</string>
+    <string name="food_content_hint">Food Content</string>
+    <string name="location_hint">Location</string>
+    <string name="get_location">GET LOCATION</string>
+    <string name="photo_label">Photo</string>
+    <string name="take_photo">TAKE PHOTO</string>
+    <string name="choose_photo">CHOOSE</string>
+    <string name="meal_image_content_description">Image of the meal</string>
 </resources>

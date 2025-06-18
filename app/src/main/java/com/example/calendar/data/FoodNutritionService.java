@@ -73,6 +73,8 @@ public class FoodNutritionService {
         localCache.put("white rice", 130);
         localCache.put("fried rice", 200);
         localCache.put("chicken", 165);
+        localCache.put("chicken wings", 283);  // USDA accurate value
+        localCache.put("chicken breast", 165);
         localCache.put("pork", 242);
         localCache.put("beef", 250);
         localCache.put("fish", 100);
@@ -111,40 +113,56 @@ public class FoodNutritionService {
         });
     }
     
-    private int getCaloriesForFood(String chineseFoodName) {
-        // 1. 首先檢查是否有直接的中文匹配
-        if (localCache.containsKey(chineseFoodName)) {
-            return localCache.get(chineseFoodName);
+    private int getCaloriesForFood(String foodName) {
+        String normalizedFoodName = foodName.toLowerCase().trim();
+        
+        // 1. 暫時禁用本地緩存 - 直接使用API獲取準確數據
+        /*
+        if (localCache.containsKey(normalizedFoodName)) {
+            Log.d(TAG, "Found in local cache: " + normalizedFoodName);
+            return localCache.get(normalizedFoodName);
+        }
+        */
+        
+        // 2. 直接調用API（因為用戶使用英文）
+        try {
+            Log.d(TAG, "Calling API for: " + normalizedFoodName);
+            int apiResult = fetchCaloriesFromAPI(normalizedFoodName);
+            if (apiResult > 0) {
+                Log.d(TAG, "API returned: " + apiResult + " calories for " + normalizedFoodName);
+                return apiResult;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "API call failed for " + normalizedFoodName, e);
         }
         
-        // 2. 轉換為英文名稱
-        String englishName = chineseToEnglishMap.get(chineseFoodName);
+        // 3. 嘗試中文映射（備用方案）
+        String englishName = chineseToEnglishMap.get(normalizedFoodName);
         if (englishName == null) {
-            // 如果沒有映射，嘗試部分匹配
+            // 部分匹配
             for (Map.Entry<String, String> entry : chineseToEnglishMap.entrySet()) {
-                if (chineseFoodName.contains(entry.getKey())) {
+                if (normalizedFoodName.contains(entry.getKey())) {
                     englishName = entry.getValue();
                     break;
                 }
             }
         }
         
-        // 3. 檢查本地緩存
-        if (englishName != null && localCache.containsKey(englishName)) {
-            return localCache.get(englishName);
-        }
-        
-        // 4. 調用API（如果有英文名稱）
         if (englishName != null) {
             try {
-                return fetchCaloriesFromAPI(englishName);
+                Log.d(TAG, "Trying mapped name: " + englishName);
+                int apiResult = fetchCaloriesFromAPI(englishName);
+                if (apiResult > 0) {
+                    return apiResult;
+                }
             } catch (Exception e) {
-                Log.e(TAG, "API call failed for " + englishName, e);
+                Log.e(TAG, "API call failed for mapped name " + englishName, e);
             }
         }
         
-        // 5. 默認返回估算值
-        return estimateCalories(chineseFoodName);
+        // 4. 默認估算值
+        Log.d(TAG, "Using estimate for: " + normalizedFoodName);
+        return estimateCalories(foodName);
     }
     
     private int fetchCaloriesFromAPI(String foodName) throws IOException {
@@ -209,18 +227,39 @@ public class FoodNutritionService {
     }
     
     private int estimateCalories(String foodName) {
-        // 基於食物類型的估算
-        if (foodName.contains("飯") || foodName.contains("麵")) {
+        String lowerFoodName = foodName.toLowerCase();
+        
+        // 基於英文食物類型的估算
+        if (lowerFoodName.contains("rice") || lowerFoodName.contains("noodle") || lowerFoodName.contains("pasta") || lowerFoodName.contains("bread")) {
             return 150; // 主食類
-        } else if (foodName.contains("肉") || foodName.contains("魚") || foodName.contains("蛋")) {
+        } else if (lowerFoodName.contains("chicken") || lowerFoodName.contains("beef") || lowerFoodName.contains("pork") || 
+                   lowerFoodName.contains("fish") || lowerFoodName.contains("meat") || lowerFoodName.contains("egg")) {
             return 200; // 蛋白質類
-        } else if (foodName.contains("菜") || foodName.contains("瓜")) {
+        } else if (lowerFoodName.contains("vegetable") || lowerFoodName.contains("lettuce") || lowerFoodName.contains("tomato") || 
+                   lowerFoodName.contains("carrot") || lowerFoodName.contains("broccoli") || lowerFoodName.contains("spinach")) {
             return 25;  // 蔬菜類
-        } else if (foodName.contains("奶") || foodName.contains("汁")) {
+        } else if (lowerFoodName.contains("milk") || lowerFoodName.contains("juice") || lowerFoodName.contains("drink")) {
             return 50;  // 飲品類
+        } else if (lowerFoodName.contains("apple") || lowerFoodName.contains("banana") || lowerFoodName.contains("orange") || 
+                   lowerFoodName.contains("fruit")) {
+            return 60;  // 水果類
         } else {
-            return 100; // 默認估算
+            Log.d(TAG, "No specific category found for: " + foodName + ", using default 150");
+            return 150; // 提高默認估算，因為100太低了
         }
+        
+        // 原來的中文邏輯作為備用
+        //if (lowerFoodName.contains("飯") || lowerFoodName.contains("麵")) {
+          //  return 150; // 主食類
+        //} else if (lowerFoodName.contains("肉") || lowerFoodName.contains("魚") || lowerFoodName.contains("蛋")) {
+            //return 200; // 蛋白質類
+        //} else if (lowerFoodName.contains("菜") || lowerFoodName.contains("瓜")) {
+         //   return 25;  // 蔬菜類
+        //} else if (lowerFoodName.contains("奶") || lowerFoodName.contains("汁")) {
+          //  return 50;  // 飲品類
+        //}
+        
+       // return 150;
     }
 
     public void getDetailedNutritionInfo(String foodName, DetailedNutritionCallback callback) {
@@ -313,7 +352,7 @@ public class FoodNutritionService {
             }
             
             StringBuilder response = new StringBuilder();
-            response.append("🥗 ").append(description).append(" (per 100g)\n");
+            response.append("🥗 ").append(description).append("\n");
             response.append("[USDA Data]\n\n");
             
             // Quick Facts - always show basic macronutrients

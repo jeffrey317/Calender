@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.util.Date;
 
-@Entity(tableName = "meals")
+@Entity(tableName = "meal")
 public class Meal {
     @PrimaryKey(autoGenerate = true)
     private long id;

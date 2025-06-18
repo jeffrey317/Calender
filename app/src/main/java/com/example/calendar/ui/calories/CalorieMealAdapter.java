@@ -43,8 +43,11 @@ public class CalorieMealAdapter extends RecyclerView.Adapter<CalorieMealAdapter.
             case DINNER:
                 mealTypeText = "Dinner";
                 break;
-            default:
+            case SNACK:
                 mealTypeText = "Snack";
+                break;
+            default:
+                mealTypeText = "Other";
                 break;
         }
         

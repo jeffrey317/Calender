@@ -244,6 +244,32 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             });
+            
+            dialog.setOnMealDeleteListener(deletedMeal -> {
+                // Delete meal from database
+                AppDatabase.databaseWriteExecutor.execute(() -> {
+                    try {
+                        Log.d(TAG, "Deleting meal: type=" + deletedMeal.getMealType() + ", id=" + deletedMeal.getId());
+                        mealDao.deleteMeal(deletedMeal);
+                        
+                        // Reload meals for current date
+                        runOnUiThread(() -> {
+                            Toast.makeText(this, "Meal deleted", Toast.LENGTH_SHORT).show();
+                            if (mainContentFragment != null) {
+                                Date mealDate = deletedMeal.getDate();
+                                Log.d(TAG, "Reloading meals after deletion for date: " + dateFormat.format(mealDate));
+                                mainContentFragment.loadMealsForDate(mealDate);
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error deleting meal", e);
+                        runOnUiThread(() -> 
+                            Toast.makeText(this, "Error deleting meal", Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                });
+            });
+            
             dialog.show(getSupportFragmentManager(), "addEditMeal");
             Log.d(TAG, "Dialog shown");
         } catch (Exception e) {

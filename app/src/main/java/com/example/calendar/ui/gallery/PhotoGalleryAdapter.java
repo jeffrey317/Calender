@@ -126,8 +126,10 @@ public class PhotoGalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     return "Lunch";
                 case DINNER:
                     return "Dinner";
+                case SNACK:
+                    return "Snack";
                 default:
-                    return "Other";
+                    return "";
             }
         }
     }

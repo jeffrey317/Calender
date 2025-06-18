@@ -54,5 +54,12 @@
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>
 
+    <!-- Button style -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="backgroundTint">#6200EE</item>
+    </style>
 
 </resources> 

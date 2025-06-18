@@ -188,7 +188,7 @@ public class CalorieFragment extends Fragment {
                 mealCalories.put(MealType.BREAKFAST, 0);
                 mealCalories.put(MealType.LUNCH, 0);
                 mealCalories.put(MealType.DINNER, 0);
-                mealCalories.put(MealType.OTHER, 0); // OTHER represents snack
+                mealCalories.put(MealType.SNACK, 0); // Initialize snack calories
                 
                 int totalCalories = 0;
                 for (Meal meal : dateMeals) {
@@ -221,7 +221,7 @@ public class CalorieFragment extends Fragment {
         breakfastCalories.setText(String.valueOf(mealCalories.get(MealType.BREAKFAST)));
         lunchCalories.setText(String.valueOf(mealCalories.get(MealType.LUNCH)));
         dinnerCalories.setText(String.valueOf(mealCalories.get(MealType.DINNER)));
-        snackCalories.setText(String.valueOf(mealCalories.get(MealType.OTHER)));
+        snackCalories.setText(String.valueOf(mealCalories.get(MealType.SNACK)));
         
         // Update total calories
         totalCaloriesText.setText(String.valueOf(totalCalories));
@@ -290,25 +290,35 @@ public class CalorieFragment extends Fragment {
     
     private void updateProgressChart(Map<MealType, Integer> mealCalories) {
         ArrayList<PieEntry> entries = new ArrayList<>();
+        ArrayList<Integer> colors = new ArrayList<>();
         
-        // Add entries for each meal type
+        // Add entries for each meal type without labels, only if calories > 0
         int breakfastCalories = mealCalories.get(MealType.BREAKFAST);
         int lunchCalories = mealCalories.get(MealType.LUNCH);
         int dinnerCalories = mealCalories.get(MealType.DINNER);
+        int snackCalories = mealCalories.get(MealType.SNACK);
         
         if (breakfastCalories > 0) {
-            entries.add(new PieEntry(breakfastCalories, "Breakfast"));
+            entries.add(new PieEntry(breakfastCalories, ""));
+            colors.add(Color.rgb(56, 178, 172)); // Teal for breakfast
         }
         if (lunchCalories > 0) {
-            entries.add(new PieEntry(lunchCalories, "Lunch"));
+            entries.add(new PieEntry(lunchCalories, ""));
+            colors.add(Color.rgb(251, 191, 36)); // Yellow for lunch
         }
         if (dinnerCalories > 0) {
-            entries.add(new PieEntry(dinnerCalories, "Dinner"));
+            entries.add(new PieEntry(dinnerCalories, ""));
+            colors.add(Color.rgb(59, 130, 246)); // Blue for dinner
+        }
+        if (snackCalories > 0) {
+            entries.add(new PieEntry(snackCalories, ""));
+            colors.add(Color.rgb(139, 69, 19)); // Brown for snack
         }
         
         // If no meals recorded, show a placeholder
         if (entries.isEmpty()) {
-            entries.add(new PieEntry(1, "No Records"));
+            entries.add(new PieEntry(1, ""));
+            colors.add(Color.rgb(156, 163, 175)); // Gray for no data
         }
         
         PieDataSet dataSet = new PieDataSet(entries, "");
@@ -316,12 +326,7 @@ public class CalorieFragment extends Fragment {
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
         
-        // Set colors to match meal cards
-        ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.rgb(56, 178, 172)); // Teal for breakfast
-        colors.add(Color.rgb(251, 191, 36)); // Yellow for lunch  
-        colors.add(Color.rgb(59, 130, 246)); // Blue for dinner
-        colors.add(Color.rgb(156, 163, 175)); // Gray for no data
+        // Set colors
         dataSet.setColors(colors);
         
         dataSet.setDrawValues(false);

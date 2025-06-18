@@ -61,6 +61,7 @@ public class AddEditMealDialog extends DialogFragment {
     private static final int LOCATION_PERMISSION_REQUEST = 1001;
     private Meal existingMeal;
     private OnMealSaveListener listener;
+    private OnMealDeleteListener deleteListener;
     private DialogAddEditMealBinding binding;
     private String currentPhotoPath;
     private FusedLocationProviderClient fusedLocationClient;
@@ -75,6 +76,10 @@ public class AddEditMealDialog extends DialogFragment {
         void onMealSave(Meal meal);
     }
 
+    public interface OnMealDeleteListener {
+        void onMealDelete(Meal meal);
+    }
+
     public void setMeal(Meal meal) {
         this.existingMeal = meal;
         Log.d(TAG, "setMeal called: " + (meal != null ? "editing existing meal" : "creating new meal"));
@@ -83,6 +88,11 @@ public class AddEditMealDialog extends DialogFragment {
     public void setOnMealSaveListener(OnMealSaveListener listener) {
         this.listener = listener;
         Log.d(TAG, "setOnMealSaveListener called: " + (listener != null ? "listener set" : "listener cleared"));
+    }
+
+    public void setOnMealDeleteListener(OnMealDeleteListener deleteListener) {
+        this.deleteListener = deleteListener;
+        Log.d(TAG, "setOnMealDeleteListener called: " + (deleteListener != null ? "listener set" : "listener cleared"));
     }
 
     @Override
@@ -178,6 +188,7 @@ public class AddEditMealDialog extends DialogFragment {
         MaterialButton takePhotoButton = binding.takePhotoButton;
         MaterialButton choosePhotoButton = binding.choosePhotoButton;
         MaterialButton saveButton = binding.saveButton;
+        MaterialButton deleteButton = binding.deleteButton;
         ImageView mealImageView = binding.mealImageView;
 
         // Set up meal type selection
@@ -197,7 +208,7 @@ public class AddEditMealDialog extends DialogFragment {
         });
 
         otherButton.setOnClickListener(v -> {
-            selectedMealType = MealType.OTHER;
+            selectedMealType = MealType.SNACK;
             updateMealTypeSelection();
         });
 
@@ -218,6 +229,11 @@ public class AddEditMealDialog extends DialogFragment {
         if (existingMeal != null) {
             loadExistingMealData();
             binding.dialogTitle.setText("Edit Meal");
+            // Show delete button only when editing existing meal
+            deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            // Hide delete button for new meals
+            deleteButton.setVisibility(View.GONE);
         }
 
         // Setup save button
@@ -234,34 +250,79 @@ public class AddEditMealDialog extends DialogFragment {
                 String foodContent = foodContentEditText.getText().toString().trim();
                 Log.d(TAG, "Food content: " + foodContent);
 
-                // Calculate calories using FoodCalories
-                int calories = FoodCalories.getCalories(foodContent);
-                Log.d(TAG, "Calculated calories: " + calories);
-                
-                Meal meal;
-                if (existingMeal != null) {
-                    meal = existingMeal;
-                    meal.setMealType(mealType);
-                    meal.setImagePath(currentPhotoPath);
-                    meal.setLocation(location);
-                    meal.setNotes(foodContent);
-                    meal.setCalories(calories);
-                    Log.d(TAG, "Updating existing meal id: " + meal.getId());
-                } else {
-                    // Get current user ID for new meal
-                    com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
-                    String userId = currentUser != null ? currentUser.getUid() : "";
-                    meal = new Meal(userId, new Date(), mealType, currentPhotoPath, location, null, null, foodContent, calories);
-                    Log.d(TAG, "Creating new meal for date: " + new Date());
-                }
+                // Prioritize API for accurate USDA data (same as AI chat)
+                if (!foodContent.isEmpty()) {
+                    // Show loading state
+                    saveButton.setEnabled(false);
+                    saveButton.setText("Calculating calories...");
+                    
+                    nutritionService.calculateCalories(foodContent, new FoodNutritionService.NutritionCallback() {
+                        @Override
+                        public void onResult(int apiCalories) {
+                            requireActivity().runOnUiThread(() -> {
+                                saveButton.setEnabled(true);
+                                saveButton.setText("Save");
+                                
+                                Log.d(TAG, "Calculated calories from API: " + apiCalories);
+                                
+                                // If API returns 0, try local database as fallback
+                                if (apiCalories == 0) {
+                                    int localCalories = FoodCalories.getCalories(foodContent);
+                                    Log.d(TAG, "API returned 0, using local fallback: " + localCalories);
+                                    saveMealWithCalories(mealType, location, foodContent, localCalories);
+                                } else {
+                                    // Use API calories (USDA data - same as AI chat)
+                                    saveMealWithCalories(mealType, location, foodContent, apiCalories);
+                                }
+                            });
+                        }
 
-                if (listener != null) {
-                    listener.onMealSave(meal);
+                        @Override
+                        public void onError(String error) {
+                            requireActivity().runOnUiThread(() -> {
+                                saveButton.setEnabled(true);
+                                saveButton.setText("Save");
+                                
+                                Log.w(TAG, "API calorie calculation failed: " + error);
+                                // Fall back to local database
+                                int localCalories = FoodCalories.getCalories(foodContent);
+                                Log.d(TAG, "Using local database fallback: " + localCalories);
+                                saveMealWithCalories(mealType, location, foodContent, localCalories);
+                            });
+                        }
+                    });
+                    return; // Exit early, callback will handle saving
                 }
-                dismiss();
+                
+                // If food content is empty, save with 0 calories
+                saveMealWithCalories(mealType, location, foodContent, 0);
             } catch (Exception e) {
                 Log.e(TAG, "Error saving meal", e);
                 Toast.makeText(requireContext(), "Error saving meal", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Setup delete button
+        deleteButton.setOnClickListener(v -> {
+            if (existingMeal != null) {
+                // Show confirmation dialog
+                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Meal")
+                    .setMessage("Are you sure you want to delete this meal?")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        try {
+                            Log.d(TAG, "Delete button clicked for meal id: " + existingMeal.getId());
+                            if (deleteListener != null) {
+                                deleteListener.onMealDelete(existingMeal);
+                            }
+                            dismiss();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error deleting meal", e);
+                            Toast.makeText(requireContext(), "Error deleting meal", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
             }
         });
         
@@ -317,7 +378,7 @@ public class AddEditMealDialog extends DialogFragment {
         binding.breakfastButton.setChecked(selectedMealType == MealType.BREAKFAST);
         binding.lunchButton.setChecked(selectedMealType == MealType.LUNCH);
         binding.dinnerButton.setChecked(selectedMealType == MealType.DINNER);
-        binding.otherButton.setChecked(selectedMealType == MealType.OTHER);
+        binding.otherButton.setChecked(selectedMealType == MealType.SNACK);
     }
 
     private MealType getMealTypeFromButtons() {
@@ -328,7 +389,7 @@ public class AddEditMealDialog extends DialogFragment {
         } else if (binding.dinnerButton.isChecked()) {
             return MealType.DINNER;
         } else {
-            return MealType.OTHER;
+            return MealType.SNACK;
         }
     }
 
@@ -520,6 +581,37 @@ public class AddEditMealDialog extends DialogFragment {
                 location.getLatitude(), location.getLongitude());
             binding.locationEditText.setText(coordinates);
             Toast.makeText(requireContext(), "Unable to resolve address, showing coordinates", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void saveMealWithCalories(MealType mealType, String location, String foodContent, int calories) {
+        try {
+            Log.d(TAG, "Saving meal with calories: " + calories);
+            
+            Meal meal;
+            if (existingMeal != null) {
+                meal = existingMeal;
+                meal.setMealType(mealType);
+                meal.setImagePath(currentPhotoPath);
+                meal.setLocation(location);
+                meal.setNotes(foodContent);
+                meal.setCalories(calories);
+                Log.d(TAG, "Updating existing meal id: " + meal.getId());
+            } else {
+                // Get current user ID for new meal
+                com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+                String userId = currentUser != null ? currentUser.getUid() : "";
+                meal = new Meal(userId, new Date(), mealType, currentPhotoPath, location, null, null, foodContent, calories);
+                Log.d(TAG, "Creating new meal for date: " + new Date());
+            }
+
+            if (listener != null) {
+                listener.onMealSave(meal);
+            }
+            dismiss();
+        } catch (Exception e) {
+            Log.e(TAG, "Error saving meal", e);
+            Toast.makeText(requireContext(), "Error saving meal", Toast.LENGTH_SHORT).show();
         }
     }
 } 

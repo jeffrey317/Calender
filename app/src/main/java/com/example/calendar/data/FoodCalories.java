@@ -34,12 +34,15 @@ public class FoodCalories {
         caloriesMap.put("burger", 540);
         caloriesMap.put("chicken rice", 480);
         caloriesMap.put("beef curry", 550);
+        caloriesMap.put("curry beef rice", 680);
         caloriesMap.put("baked pork chop rice", 422);
         caloriesMap.put("curry", 450);
         caloriesMap.put("salad", 150);
         
         // Proteins
         caloriesMap.put("chicken", 165);
+        caloriesMap.put("chicken wings", 283);  // Specific USDA value for chicken wings
+        caloriesMap.put("chicken breast", 165);  // Specify this is for chicken breast
         caloriesMap.put("pork", 242);
         caloriesMap.put("pork chop", 500);
         caloriesMap.put("beef", 250);
@@ -71,10 +74,51 @@ public class FoodCalories {
         caloriesMap.put("juice", 45);
         caloriesMap.put("water", 0);
         caloriesMap.put("soda", 42);
+        
+        // Milkshakes and smoothies
+        caloriesMap.put("milkshake", 340);  // Base milkshake
+        caloriesMap.put("banana milkshake", 380);  // Banana adds ~40 calories
+        caloriesMap.put("chocolate milkshake", 420);
+        caloriesMap.put("strawberry milkshake", 360);
+        caloriesMap.put("vanilla milkshake", 340);
+        
+        // Add foods that were missing - showing 333 calories per 100g in AI chat
+        // Please replace "unknown_food" with the actual food name you entered
+        // caloriesMap.put("your_food_name_here", 333);
     }
     
     public static int getCalories(String food) {
-        String lowercaseFood = food.toLowerCase().trim();
-        return caloriesMap.getOrDefault(lowercaseFood, 0);
+        // Convert to lowercase and remove extra spaces
+        String normalizedFood = food.toLowerCase().trim();
+        
+        // Try exact match first
+        if (caloriesMap.containsKey(normalizedFood)) {
+            return caloriesMap.get(normalizedFood);
+        }
+        
+        // Try matching parts of the food name - prioritize longer matches
+        String[] foodParts = normalizedFood.split("\\s+");
+        String bestMatch = null;
+        int longestMatchLength = 0;
+        
+        for (String key : caloriesMap.keySet()) {
+            boolean allPartsMatch = true;
+            for (String part : foodParts) {
+                if (!key.contains(part)) {
+                    allPartsMatch = false;
+                    break;
+                }
+            }
+            if (allPartsMatch && key.length() > longestMatchLength) {
+                bestMatch = key;
+                longestMatchLength = key.length();
+            }
+        }
+        
+        if (bestMatch != null) {
+            return caloriesMap.get(bestMatch);
+        }
+        
+        return 0;
     }
 } 
